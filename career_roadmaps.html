@@ -1,0 +1,1718 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Career Roadmaps - Interactive Learning Tracker</title>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Poppins:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-dark: #0A0E27;
+            --bg-medium: #151932;
+            --bg-card: #1E2139;
+            --accent-cyan: #00D9FF;
+            --accent-purple: #B66DFF;
+            --accent-pink: #FF6B9D;
+            --accent-green: #00F5A0;
+            --accent-orange: #FFB830;
+            --text-primary: #FFFFFF;
+            --text-secondary: #A0AEC0;
+            --shadow-glow: 0 8px 32px rgba(0, 217, 255, 0.15);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: var(--bg-dark);
+            color: var(--text-primary);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        /* Animated background */
+        .background-pattern {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(circle at 20% 50%, rgba(0, 217, 255, 0.08) 0%, transparent 50%),
+                radial-gradient(circle at 80% 80%, rgba(182, 109, 255, 0.08) 0%, transparent 50%),
+                radial-gradient(circle at 40% 20%, rgba(255, 107, 157, 0.06) 0%, transparent 50%);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .container {
+            position: relative;
+            z-index: 1;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        /* Header */
+        header {
+            text-align: center;
+            margin-bottom: 60px;
+            animation: fadeInDown 0.8s ease-out;
+        }
+
+        h1 {
+            font-size: 4rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, var(--accent-cyan), var(--accent-purple), var(--accent-pink));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 20px;
+            letter-spacing: -2px;
+        }
+
+        .tagline {
+            font-size: 1.3rem;
+            color: var(--text-secondary);
+            font-weight: 300;
+        }
+
+        /* Career Grid */
+        .careers-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin-bottom: 60px;
+        }
+
+        .career-card {
+            background: var(--bg-card);
+            border-radius: 20px;
+            padding: 35px;
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            border: 2px solid transparent;
+            position: relative;
+            overflow: hidden;
+            animation: fadeInUp 0.6s ease-out backwards;
+        }
+
+        .career-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, var(--accent-cyan) 0%, var(--accent-purple) 100%);
+            opacity: 0;
+            transition: opacity 0.4s;
+            z-index: 0;
+        }
+
+        .career-card:hover::before {
+            opacity: 0.1;
+        }
+
+        .career-card:hover {
+            transform: translateY(-10px);
+            box-shadow: var(--shadow-glow);
+            border-color: var(--accent-cyan);
+        }
+
+        .career-card > * {
+            position: relative;
+            z-index: 1;
+        }
+
+        .career-icon {
+            font-size: 3rem;
+            margin-bottom: 20px;
+            display: block;
+        }
+
+        .career-card h3 {
+            font-size: 1.5rem;
+            margin-bottom: 12px;
+            font-weight: 700;
+        }
+
+        .career-card p {
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+            margin-bottom: 20px;
+        }
+
+        .topic-count {
+            display: inline-block;
+            background: rgba(0, 217, 255, 0.2);
+            color: var(--accent-cyan);
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            font-family: 'Space Mono', monospace;
+        }
+
+        /* Roadmap Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(10, 14, 39, 0.95);
+            backdrop-filter: blur(10px);
+            z-index: 1000;
+            overflow-y: auto;
+            animation: fadeIn 0.3s;
+        }
+
+        .modal.active {
+            display: block;
+        }
+
+        .modal-content {
+            max-width: 1200px;
+            margin: 40px auto;
+            padding: 40px;
+            position: relative;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 40px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid var(--bg-card);
+        }
+
+        .modal-title {
+            font-size: 2.5rem;
+            font-weight: 800;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .close-btn {
+            background: var(--bg-card);
+            border: none;
+            color: var(--text-primary);
+            font-size: 2rem;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .close-btn:hover {
+            background: var(--accent-pink);
+            transform: rotate(90deg);
+        }
+
+        /* Progress Bar */
+        .progress-section {
+            background: var(--bg-card);
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 30px;
+            border: 1px solid rgba(0, 217, 255, 0.2);
+        }
+
+        .progress-stats {
+            display: flex;
+            justify-content: space-around;
+            margin-bottom: 20px;
+        }
+
+        .stat {
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 2.5rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, var(--accent-cyan), var(--accent-green));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-family: 'Space Mono', monospace;
+        }
+
+        .stat-label {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        .progress-bar-container {
+            width: 100%;
+            height: 20px;
+            background: var(--bg-dark);
+            border-radius: 10px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, var(--accent-cyan), var(--accent-green));
+            border-radius: 10px;
+            transition: width 0.5s ease;
+            position: relative;
+            box-shadow: 0 0 20px rgba(0, 217, 255, 0.5);
+        }
+
+        /* Phase Sections */
+        .phase-section {
+            margin-bottom: 40px;
+            animation: fadeInUp 0.6s ease-out backwards;
+        }
+
+        .phase-header {
+            background: linear-gradient(135deg, var(--bg-medium), var(--bg-card));
+            padding: 20px 30px;
+            border-radius: 15px;
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-left: 5px solid var(--accent-purple);
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .phase-header:hover {
+            transform: translateX(10px);
+            border-left-color: var(--accent-cyan);
+        }
+
+        .phase-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .phase-badge {
+            background: rgba(182, 109, 255, 0.2);
+            color: var(--accent-purple);
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            font-family: 'Space Mono', monospace;
+        }
+
+        /* Topics List */
+        .topics-list {
+            display: grid;
+            gap: 12px;
+        }
+
+        .topic-item {
+            background: var(--bg-card);
+            padding: 20px 25px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            transition: all 0.3s;
+            border: 2px solid transparent;
+            cursor: pointer;
+        }
+
+        .topic-item:hover {
+            border-color: var(--accent-cyan);
+            background: rgba(0, 217, 255, 0.05);
+        }
+
+        .topic-item.completed {
+            background: rgba(0, 245, 160, 0.1);
+            border-color: var(--accent-green);
+        }
+
+        .checkbox {
+            width: 30px;
+            height: 30px;
+            border: 3px solid var(--text-secondary);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.3rem;
+            transition: all 0.3s;
+            flex-shrink: 0;
+        }
+
+        .topic-item.completed .checkbox {
+            background: var(--accent-green);
+            border-color: var(--accent-green);
+            animation: checkBounce 0.4s;
+        }
+
+        .topic-content {
+            flex: 1;
+        }
+
+        .topic-name {
+            font-size: 1.1rem;
+            font-weight: 500;
+            margin-bottom: 5px;
+        }
+
+        .topic-item.completed .topic-name {
+            text-decoration: line-through;
+            opacity: 0.7;
+        }
+
+        .topic-meta {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .priority-badge {
+            padding: 3px 12px;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            font-family: 'Space Mono', monospace;
+        }
+
+        .priority-essential {
+            background: rgba(255, 107, 157, 0.2);
+            color: var(--accent-pink);
+        }
+
+        .priority-important {
+            background: rgba(255, 184, 48, 0.2);
+            color: var(--accent-orange);
+        }
+
+        .priority-good {
+            background: rgba(0, 245, 160, 0.2);
+            color: var(--accent-green);
+        }
+
+        .category-tag {
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+        }
+
+        /* Animations */
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes checkBounce {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.3); }
+        }
+
+        /* Staggered animations */
+        .career-card:nth-child(1) { animation-delay: 0.1s; }
+        .career-card:nth-child(2) { animation-delay: 0.2s; }
+        .career-card:nth-child(3) { animation-delay: 0.3s; }
+        .career-card:nth-child(4) { animation-delay: 0.4s; }
+        .career-card:nth-child(5) { animation-delay: 0.5s; }
+        .career-card:nth-child(6) { animation-delay: 0.6s; }
+        .career-card:nth-child(7) { animation-delay: 0.7s; }
+        .career-card:nth-child(8) { animation-delay: 0.8s; }
+        .career-card:nth-child(9) { animation-delay: 0.9s; }
+
+        .phase-section:nth-child(1) { animation-delay: 0.1s; }
+        .phase-section:nth-child(2) { animation-delay: 0.2s; }
+        .phase-section:nth-child(3) { animation-delay: 0.3s; }
+        .phase-section:nth-child(4) { animation-delay: 0.4s; }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            h1 { font-size: 2.5rem; }
+            .tagline { font-size: 1rem; }
+            .modal-content { padding: 20px; }
+            .modal-title { font-size: 1.8rem; }
+            .progress-stats { flex-direction: column; gap: 15px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="background-pattern"></div>
+    
+    <div class="container">
+        <header>
+            <h1>🗺️ Career Roadmaps</h1>
+            <p class="tagline">Your personalized learning journey to master any tech career path</p>
+        </header>
+
+        <div class="careers-grid" id="careersGrid"></div>
+    </div>
+
+    <!-- Modal Template -->
+    <div class="modal" id="roadmapModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title" id="modalTitle"></div>
+                <button class="close-btn" onclick="closeModal()">×</button>
+            </div>
+
+            <div class="progress-section">
+                <div class="progress-stats">
+                    <div class="stat">
+                        <div class="stat-value" id="completedCount">0</div>
+                        <div class="stat-label">Completed</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-value" id="totalCount">0</div>
+                        <div class="stat-label">Total Topics</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-value" id="progressPercent">0%</div>
+                        <div class="stat-label">Progress</div>
+                    </div>
+                </div>
+                <div class="progress-bar-container">
+                    <div class="progress-bar" id="progressBar"></div>
+                </div>
+            </div>
+
+            <div id="phasesContainer"></div>
+        </div>
+    </div>
+
+    <script>
+        // Career roadmaps data
+        const careers = {
+            devops: {
+                icon: "🚀",
+                title: "DevOps Engineer",
+                description: "Master CI/CD, containers, Kubernetes, cloud platforms, and infrastructure automation",
+                color: "#00D9FF",
+                phases: [
+                    {
+                        name: "🐧 Linux & Operating Systems",
+                        topics: [
+                            { name: "Linux fundamentals & file system hierarchy", priority: "Essential", category: "Linux/OS" },
+                            { name: "Shell commands & navigation (ls, cd, find, grep, awk, sed)", priority: "Essential", category: "Linux/OS" },
+                            { name: "File permissions & ownership (chmod, chown, umask)", priority: "Essential", category: "Linux/OS" },
+                            { name: "Process management (ps, top, kill, systemctl, journalctl)", priority: "Essential", category: "Linux/OS" },
+                            { name: "Package management (apt, yum, dnf, snap)", priority: "Essential", category: "Linux/OS" },
+                            { name: "User & group management", priority: "Essential", category: "Linux/OS" },
+                            { name: "SSH & remote access configuration", priority: "Essential", category: "Linux/OS" },
+                            { name: "Networking tools (ifconfig, ip, netstat, ss, ping, traceroute)", priority: "Important", category: "Linux/OS" },
+                            { name: "Cron jobs & task scheduling", priority: "Important", category: "Linux/OS" },
+                            { name: "Log management & analysis (/var/log, syslog)", priority: "Important", category: "Linux/OS" }
+                        ]
+                    },
+                    {
+                        name: "🌐 Networking & Security",
+                        topics: [
+                            { name: "OSI & TCP/IP model", priority: "Essential", category: "Networking" },
+                            { name: "IP addressing, subnetting & CIDR notation", priority: "Essential", category: "Networking" },
+                            { name: "DNS – zones, records, resolution", priority: "Essential", category: "Networking" },
+                            { name: "HTTP/HTTPS & TLS/SSL certificates", priority: "Essential", category: "Networking" },
+                            { name: "Load balancing concepts (L4 vs L7)", priority: "Important", category: "Networking" },
+                            { name: "Firewalls, iptables & security groups", priority: "Important", category: "Networking" },
+                            { name: "Proxy servers & reverse proxies", priority: "Important", category: "Networking" }
+                        ]
+                    },
+                    {
+                        name: "💻 Scripting & Programming",
+                        topics: [
+                            { name: "Bash scripting – variables, loops, conditionals", priority: "Essential", category: "Scripting" },
+                            { name: "Python basics – syntax, data types, control flow", priority: "Essential", category: "Scripting" },
+                            { name: "YAML & JSON – reading, writing & validation", priority: "Essential", category: "Scripting" },
+                            { name: "Python – file I/O, modules & packages", priority: "Important", category: "Scripting" },
+                            { name: "Python – working with APIs (requests)", priority: "Important", category: "Scripting" },
+                            { name: "Regular expressions (regex)", priority: "Important", category: "Scripting" }
+                        ]
+                    },
+                    {
+                        name: "🔀 Version Control with Git",
+                        topics: [
+                            { name: "Git fundamentals – init, clone, add, commit, push, pull", priority: "Essential", category: "Version Control" },
+                            { name: "Branching strategies (Git Flow, trunk-based)", priority: "Essential", category: "Version Control" },
+                            { name: "Merging, rebasing & cherry-picking", priority: "Essential", category: "Version Control" },
+                            { name: "Resolving merge conflicts", priority: "Essential", category: "Version Control" },
+                            { name: "GitHub/GitLab – pull requests & code reviews", priority: "Essential", category: "Version Control" }
+                        ]
+                    },
+                    {
+                        name: "⚙️ CI/CD Pipelines",
+                        topics: [
+                            { name: "CI/CD concepts & pipeline stages", priority: "Essential", category: "CI/CD" },
+                            { name: "GitHub Actions – workflows, actions, secrets", priority: "Essential", category: "CI/CD" },
+                            { name: "Automated testing integration", priority: "Essential", category: "CI/CD" },
+                            { name: "Jenkins – installation, jobs, pipelines", priority: "Important", category: "CI/CD" },
+                            { name: "GitLab CI/CD – .gitlab-ci.yml, runners", priority: "Important", category: "CI/CD" },
+                            { name: "Artifact management (Nexus, Artifactory)", priority: "Important", category: "CI/CD" },
+                            { name: "Blue-green & canary deployments", priority: "Important", category: "CI/CD" }
+                        ]
+                    },
+                    {
+                        name: "🐳 Containers & Docker",
+                        topics: [
+                            { name: "Container concepts – images, layers, registries", priority: "Essential", category: "Containers" },
+                            { name: "Docker – CLI, run, build, push", priority: "Essential", category: "Containers" },
+                            { name: "Dockerfile best practices & multi-stage builds", priority: "Essential", category: "Containers" },
+                            { name: "Docker networking – bridge, host, overlay", priority: "Essential", category: "Containers" },
+                            { name: "Docker Compose – multi-container applications", priority: "Essential", category: "Containers" },
+                            { name: "Container security – non-root users, scanning", priority: "Important", category: "Containers" }
+                        ]
+                    },
+                    {
+                        name: "☸️ Kubernetes",
+                        topics: [
+                            { name: "Kubernetes architecture – control plane & nodes", priority: "Essential", category: "Kubernetes" },
+                            { name: "Core objects – Pods, Deployments, Services", priority: "Essential", category: "Kubernetes" },
+                            { name: "ConfigMaps & Secrets management", priority: "Essential", category: "Kubernetes" },
+                            { name: "Helm – charts, values, releases", priority: "Essential", category: "Kubernetes" },
+                            { name: "kubectl CLI – commands & debugging", priority: "Essential", category: "Kubernetes" },
+                            { name: "Ingress controllers & networking", priority: "Important", category: "Kubernetes" },
+                            { name: "RBAC – roles, bindings, service accounts", priority: "Important", category: "Kubernetes" },
+                            { name: "Horizontal Pod Autoscaling", priority: "Important", category: "Kubernetes" }
+                        ]
+                    },
+                    {
+                        name: "☁️ Cloud Platforms",
+                        topics: [
+                            { name: "Cloud computing concepts (IaaS, PaaS, SaaS)", priority: "Essential", category: "Cloud" },
+                            { name: "AWS Core – EC2, S3, VPC, IAM, RDS", priority: "Essential", category: "Cloud" },
+                            { name: "AWS Advanced – Lambda, ECS, EKS", priority: "Important", category: "Cloud" },
+                            { name: "AWS Networking – ALB, NLB, VPC peering", priority: "Important", category: "Cloud" },
+                            { name: "Cloud cost optimization & FinOps", priority: "Important", category: "Cloud" }
+                        ]
+                    },
+                    {
+                        name: "🏗️ Infrastructure as Code",
+                        topics: [
+                            { name: "IaC concepts & benefits", priority: "Essential", category: "IaC" },
+                            { name: "Terraform – providers, resources, state", priority: "Essential", category: "IaC" },
+                            { name: "Terraform – plan, apply, destroy, workspaces", priority: "Essential", category: "IaC" },
+                            { name: "Terraform – remote state (S3 + DynamoDB)", priority: "Important", category: "IaC" },
+                            { name: "Ansible – inventory, playbooks, roles", priority: "Important", category: "IaC" }
+                        ]
+                    },
+                    {
+                        name: "📊 Monitoring & Observability",
+                        topics: [
+                            { name: "Observability pillars – metrics, logs, traces", priority: "Essential", category: "Monitoring" },
+                            { name: "Prometheus – scraping, metrics, PromQL", priority: "Essential", category: "Monitoring" },
+                            { name: "Grafana – dashboards, data sources, alerting", priority: "Essential", category: "Monitoring" },
+                            { name: "Alerting strategies & on-call practices", priority: "Essential", category: "Monitoring" },
+                            { name: "ELK Stack (Elasticsearch, Logstash, Kibana)", priority: "Important", category: "Monitoring" }
+                        ]
+                    }
+                ]
+            },
+            frontend: {
+                icon: "🎨",
+                title: "Frontend Developer",
+                description: "Build beautiful, responsive user interfaces with React, TypeScript, and modern CSS",
+                color: "#B66DFF",
+                phases: [
+                    {
+                        name: "🌐 HTML & CSS Fundamentals",
+                        topics: [
+                            { name: "HTML5 semantic elements & structure", priority: "Essential", category: "HTML/CSS" },
+                            { name: "CSS selectors, specificity & cascade", priority: "Essential", category: "HTML/CSS" },
+                            { name: "Box model & positioning (static, relative, absolute, fixed)", priority: "Essential", category: "HTML/CSS" },
+                            { name: "Flexbox layout system", priority: "Essential", category: "HTML/CSS" },
+                            { name: "CSS Grid layout system", priority: "Essential", category: "HTML/CSS" },
+                            { name: "Responsive design & media queries", priority: "Essential", category: "HTML/CSS" },
+                            { name: "CSS animations & transitions", priority: "Important", category: "HTML/CSS" },
+                            { name: "CSS custom properties (variables)", priority: "Important", category: "HTML/CSS" }
+                        ]
+                    },
+                    {
+                        name: "💻 JavaScript Fundamentals",
+                        topics: [
+                            { name: "Variables, data types & operators", priority: "Essential", category: "JavaScript" },
+                            { name: "Functions, arrow functions & scope", priority: "Essential", category: "JavaScript" },
+                            { name: "Arrays & array methods (map, filter, reduce)", priority: "Essential", category: "JavaScript" },
+                            { name: "Objects & destructuring", priority: "Essential", category: "JavaScript" },
+                            { name: "DOM manipulation & event listeners", priority: "Essential", category: "JavaScript" },
+                            { name: "Promises & async/await", priority: "Essential", category: "JavaScript" },
+                            { name: "Fetch API & working with REST APIs", priority: "Essential", category: "JavaScript" },
+                            { name: "ES6+ features (spread, rest, modules)", priority: "Important", category: "JavaScript" }
+                        ]
+                    },
+                    {
+                        name: "⚛️ React Fundamentals",
+                        topics: [
+                            { name: "JSX syntax & components", priority: "Essential", category: "React" },
+                            { name: "Props & component composition", priority: "Essential", category: "React" },
+                            { name: "State management with useState", priority: "Essential", category: "React" },
+                            { name: "Side effects with useEffect", priority: "Essential", category: "React" },
+                            { name: "Event handling & forms", priority: "Essential", category: "React" },
+                            { name: "Conditional rendering & lists", priority: "Essential", category: "React" },
+                            { name: "Custom hooks", priority: "Important", category: "React" },
+                            { name: "Context API for state sharing", priority: "Important", category: "React" }
+                        ]
+                    },
+                    {
+                        name: "🎯 Advanced React",
+                        topics: [
+                            { name: "React Router – routing & navigation", priority: "Essential", category: "React Advanced" },
+                            { name: "Performance optimization (memo, useMemo, useCallback)", priority: "Important", category: "React Advanced" },
+                            { name: "State management (Redux, Zustand, or Recoil)", priority: "Important", category: "React Advanced" },
+                            { name: "React Query / TanStack Query for data fetching", priority: "Important", category: "React Advanced" },
+                            { name: "Error boundaries & error handling", priority: "Important", category: "React Advanced" },
+                            { name: "Code splitting & lazy loading", priority: "Good to Know", category: "React Advanced" }
+                        ]
+                    },
+                    {
+                        name: "📘 TypeScript",
+                        topics: [
+                            { name: "TypeScript basics – types & interfaces", priority: "Essential", category: "TypeScript" },
+                            { name: "Type annotations for functions & variables", priority: "Essential", category: "TypeScript" },
+                            { name: "Union types, intersection types & type guards", priority: "Important", category: "TypeScript" },
+                            { name: "Generics for reusable code", priority: "Important", category: "TypeScript" },
+                            { name: "TypeScript with React (typed props, hooks)", priority: "Essential", category: "TypeScript" }
+                        ]
+                    },
+                    {
+                        name: "🎨 CSS Frameworks & Styling",
+                        topics: [
+                            { name: "Tailwind CSS utility classes", priority: "Important", category: "Styling" },
+                            { name: "CSS-in-JS (styled-components or Emotion)", priority: "Important", category: "Styling" },
+                            { name: "Component libraries (shadcn/ui, Material-UI)", priority: "Good to Know", category: "Styling" },
+                            { name: "CSS preprocessors (Sass/SCSS)", priority: "Good to Know", category: "Styling" }
+                        ]
+                    },
+                    {
+                        name: "🛠️ Build Tools & Developer Experience",
+                        topics: [
+                            { name: "npm/yarn package management", priority: "Essential", category: "Tooling" },
+                            { name: "Vite or Create React App", priority: "Essential", category: "Tooling" },
+                            { name: "ESLint & Prettier for code quality", priority: "Important", category: "Tooling" },
+                            { name: "Git version control basics", priority: "Essential", category: "Tooling" },
+                            { name: "Browser DevTools debugging", priority: "Essential", category: "Tooling" }
+                        ]
+                    },
+                    {
+                        name: "🧪 Testing",
+                        topics: [
+                            { name: "Jest – unit testing basics", priority: "Important", category: "Testing" },
+                            { name: "React Testing Library – component testing", priority: "Important", category: "Testing" },
+                            { name: "Integration testing strategies", priority: "Good to Know", category: "Testing" },
+                            { name: "E2E testing with Playwright or Cypress", priority: "Good to Know", category: "Testing" }
+                        ]
+                    },
+                    {
+                        name: "🚀 Deployment & Performance",
+                        topics: [
+                            { name: "Vercel or Netlify deployment", priority: "Important", category: "Deployment" },
+                            { name: "Web performance optimization (lighthouse)", priority: "Important", category: "Performance" },
+                            { name: "SEO basics & meta tags", priority: "Important", category: "Performance" },
+                            { name: "Progressive Web Apps (PWA) concepts", priority: "Good to Know", category: "Performance" }
+                        ]
+                    }
+                ]
+            },
+            backend: {
+                icon: "⚡",
+                title: "Backend Developer",
+                description: "Design scalable APIs, databases, and server-side architecture with Node.js or Python",
+                color: "#FF6B9D",
+                phases: [
+                    {
+                        name: "💻 Programming Fundamentals",
+                        topics: [
+                            { name: "Choose a language: Node.js (JavaScript) or Python", priority: "Essential", category: "Programming" },
+                            { name: "Data structures (arrays, objects, maps, sets)", priority: "Essential", category: "Programming" },
+                            { name: "Algorithms basics (sorting, searching)", priority: "Important", category: "Programming" },
+                            { name: "Object-oriented programming concepts", priority: "Essential", category: "Programming" },
+                            { name: "Functional programming concepts", priority: "Important", category: "Programming" },
+                            { name: "Error handling & exceptions", priority: "Essential", category: "Programming" }
+                        ]
+                    },
+                    {
+                        name: "🌐 Web Fundamentals",
+                        topics: [
+                            { name: "HTTP/HTTPS protocols & methods", priority: "Essential", category: "Web" },
+                            { name: "REST API principles & design", priority: "Essential", category: "Web" },
+                            { name: "JSON data format", priority: "Essential", category: "Web" },
+                            { name: "Authentication vs Authorization", priority: "Essential", category: "Web" },
+                            { name: "CORS (Cross-Origin Resource Sharing)", priority: "Important", category: "Web" },
+                            { name: "Status codes & error responses", priority: "Essential", category: "Web" }
+                        ]
+                    },
+                    {
+                        name: "🚀 Backend Framework",
+                        topics: [
+                            { name: "Express.js (Node) or FastAPI (Python) setup", priority: "Essential", category: "Framework" },
+                            { name: "Routing & request handling", priority: "Essential", category: "Framework" },
+                            { name: "Middleware & request/response cycle", priority: "Essential", category: "Framework" },
+                            { name: "Request validation & sanitization", priority: "Essential", category: "Framework" },
+                            { name: "Environment variables & configuration", priority: "Essential", category: "Framework" },
+                            { name: "File uploads & handling", priority: "Important", category: "Framework" }
+                        ]
+                    },
+                    {
+                        name: "🗄️ Databases",
+                        topics: [
+                            { name: "SQL basics – SELECT, INSERT, UPDATE, DELETE", priority: "Essential", category: "Database" },
+                            { name: "PostgreSQL or MySQL", priority: "Essential", category: "Database" },
+                            { name: "Database design & normalization", priority: "Essential", category: "Database" },
+                            { name: "Joins, indexes & query optimization", priority: "Important", category: "Database" },
+                            { name: "ORMs (Sequelize, Prisma, SQLAlchemy)", priority: "Important", category: "Database" },
+                            { name: "NoSQL databases (MongoDB) basics", priority: "Important", category: "Database" },
+                            { name: "Database migrations & seeding", priority: "Important", category: "Database" }
+                        ]
+                    },
+                    {
+                        name: "🔐 Authentication & Security",
+                        topics: [
+                            { name: "Password hashing (bcrypt)", priority: "Essential", category: "Security" },
+                            { name: "JWT (JSON Web Tokens)", priority: "Essential", category: "Security" },
+                            { name: "Session management", priority: "Important", category: "Security" },
+                            { name: "OAuth 2.0 & third-party auth", priority: "Important", category: "Security" },
+                            { name: "Input validation & SQL injection prevention", priority: "Essential", category: "Security" },
+                            { name: "XSS & CSRF protection", priority: "Important", category: "Security" },
+                            { name: "Rate limiting & API security", priority: "Important", category: "Security" }
+                        ]
+                    },
+                    {
+                        name: "📡 APIs & Integrations",
+                        topics: [
+                            { name: "RESTful API best practices", priority: "Essential", category: "APIs" },
+                            { name: "API documentation (Swagger/OpenAPI)", priority: "Important", category: "APIs" },
+                            { name: "GraphQL basics (optional)", priority: "Good to Know", category: "APIs" },
+                            { name: "WebSockets for real-time features", priority: "Important", category: "APIs" },
+                            { name: "Third-party API integration", priority: "Important", category: "APIs" },
+                            { name: "Pagination, filtering & sorting", priority: "Essential", category: "APIs" }
+                        ]
+                    },
+                    {
+                        name: "🧪 Testing",
+                        topics: [
+                            { name: "Unit testing (Jest, pytest)", priority: "Important", category: "Testing" },
+                            { name: "Integration testing", priority: "Important", category: "Testing" },
+                            { name: "API testing (Postman, Insomnia)", priority: "Essential", category: "Testing" },
+                            { name: "Test-driven development (TDD) basics", priority: "Good to Know", category: "Testing" }
+                        ]
+                    },
+                    {
+                        name: "🐳 Deployment & DevOps Basics",
+                        topics: [
+                            { name: "Git version control", priority: "Essential", category: "DevOps" },
+                            { name: "Docker basics – containerization", priority: "Important", category: "DevOps" },
+                            { name: "CI/CD pipelines (GitHub Actions)", priority: "Important", category: "DevOps" },
+                            { name: "Deployment to cloud (AWS, Heroku, Railway)", priority: "Important", category: "DevOps" },
+                            { name: "Environment management (dev, staging, prod)", priority: "Important", category: "DevOps" },
+                            { name: "Logging & monitoring basics", priority: "Important", category: "DevOps" }
+                        ]
+                    },
+                    {
+                        name: "⚡ Performance & Scalability",
+                        topics: [
+                            { name: "Caching strategies (Redis)", priority: "Important", category: "Performance" },
+                            { name: "Database connection pooling", priority: "Important", category: "Performance" },
+                            { name: "Asynchronous processing (queues, workers)", priority: "Important", category: "Performance" },
+                            { name: "Load balancing concepts", priority: "Good to Know", category: "Performance" },
+                            { name: "Microservices architecture basics", priority: "Good to Know", category: "Performance" }
+                        ]
+                    }
+                ]
+            },
+            data_science: {
+                icon: "📊",
+                title: "Data Scientist",
+                description: "Analyze data, build ML models, and extract insights using Python, SQL, and statistics",
+                color: "#00F5A0",
+                phases: [
+                    {
+                        name: "🐍 Python for Data Science",
+                        topics: [
+                            { name: "Python basics – syntax, variables, data types", priority: "Essential", category: "Python" },
+                            { name: "NumPy – arrays, indexing, operations", priority: "Essential", category: "Python" },
+                            { name: "Pandas – DataFrames, Series, data manipulation", priority: "Essential", category: "Python" },
+                            { name: "Pandas – filtering, grouping, aggregations", priority: "Essential", category: "Python" },
+                            { name: "Matplotlib & Seaborn – data visualization", priority: "Essential", category: "Python" },
+                            { name: "Jupyter Notebooks – interactive coding", priority: "Essential", category: "Python" }
+                        ]
+                    },
+                    {
+                        name: "📈 Statistics & Math",
+                        topics: [
+                            { name: "Descriptive statistics – mean, median, mode, std dev", priority: "Essential", category: "Statistics" },
+                            { name: "Probability distributions (normal, binomial)", priority: "Essential", category: "Statistics" },
+                            { name: "Hypothesis testing (t-tests, chi-square)", priority: "Essential", category: "Statistics" },
+                            { name: "Correlation & regression analysis", priority: "Essential", category: "Statistics" },
+                            { name: "Linear algebra basics for ML", priority: "Important", category: "Math" },
+                            { name: "Calculus basics (derivatives, gradients)", priority: "Important", category: "Math" }
+                        ]
+                    },
+                    {
+                        name: "🗄️ SQL & Databases",
+                        topics: [
+                            { name: "SQL basics – SELECT, WHERE, JOIN", priority: "Essential", category: "SQL" },
+                            { name: "Aggregations – GROUP BY, HAVING, COUNT, SUM", priority: "Essential", category: "SQL" },
+                            { name: "Subqueries & CTEs (Common Table Expressions)", priority: "Important", category: "SQL" },
+                            { name: "Window functions (ROW_NUMBER, RANK)", priority: "Important", category: "SQL" },
+                            { name: "Working with PostgreSQL or MySQL", priority: "Essential", category: "SQL" }
+                        ]
+                    },
+                    {
+                        name: "🤖 Machine Learning Fundamentals",
+                        topics: [
+                            { name: "Supervised vs unsupervised learning", priority: "Essential", category: "ML" },
+                            { name: "Train/test split & cross-validation", priority: "Essential", category: "ML" },
+                            { name: "Linear regression", priority: "Essential", category: "ML" },
+                            { name: "Logistic regression for classification", priority: "Essential", category: "ML" },
+                            { name: "Decision trees & random forests", priority: "Essential", category: "ML" },
+                            { name: "K-means clustering", priority: "Important", category: "ML" },
+                            { name: "Model evaluation metrics (accuracy, precision, recall, F1)", priority: "Essential", category: "ML" }
+                        ]
+                    },
+                    {
+                        name: "🛠️ Scikit-Learn",
+                        topics: [
+                            { name: "Data preprocessing (scaling, encoding)", priority: "Essential", category: "Scikit-Learn" },
+                            { name: "Pipeline creation for ML workflows", priority: "Important", category: "Scikit-Learn" },
+                            { name: "Hyperparameter tuning (GridSearchCV)", priority: "Important", category: "Scikit-Learn" },
+                            { name: "Feature selection & engineering", priority: "Important", category: "Scikit-Learn" },
+                            { name: "Handling imbalanced datasets", priority: "Important", category: "Scikit-Learn" }
+                        ]
+                    },
+                    {
+                        name: "🧠 Deep Learning Basics",
+                        topics: [
+                            { name: "Neural networks fundamentals", priority: "Important", category: "Deep Learning" },
+                            { name: "TensorFlow or PyTorch basics", priority: "Important", category: "Deep Learning" },
+                            { name: "Building simple neural networks", priority: "Important", category: "Deep Learning" },
+                            { name: "CNNs for image data (optional)", priority: "Good to Know", category: "Deep Learning" },
+                            { name: "Transfer learning concepts", priority: "Good to Know", category: "Deep Learning" }
+                        ]
+                    },
+                    {
+                        name: "📊 Data Visualization & Storytelling",
+                        topics: [
+                            { name: "Choosing the right chart type", priority: "Essential", category: "Visualization" },
+                            { name: "Plotly for interactive visualizations", priority: "Important", category: "Visualization" },
+                            { name: "Tableau or Power BI basics", priority: "Important", category: "Visualization" },
+                            { name: "Dashboard design principles", priority: "Important", category: "Visualization" },
+                            { name: "Data storytelling & presentation", priority: "Essential", category: "Visualization" }
+                        ]
+                    },
+                    {
+                        name: "🚀 Big Data & Tools",
+                        topics: [
+                            { name: "Apache Spark basics (PySpark)", priority: "Good to Know", category: "Big Data" },
+                            { name: "Cloud platforms (AWS S3, BigQuery)", priority: "Important", category: "Big Data" },
+                            { name: "Working with large datasets efficiently", priority: "Important", category: "Big Data" }
+                        ]
+                    },
+                    {
+                        name: "🔄 MLOps & Deployment",
+                        topics: [
+                            { name: "Model serialization (pickle, joblib)", priority: "Important", category: "MLOps" },
+                            { name: "Git for version control", priority: "Essential", category: "MLOps" },
+                            { name: "API creation for ML models (FastAPI, Flask)", priority: "Important", category: "MLOps" },
+                            { name: "Docker for containerization", priority: "Important", category: "MLOps" },
+                            { name: "Model monitoring & retraining", priority: "Good to Know", category: "MLOps" }
+                        ]
+                    }
+                ]
+            },
+            mobile: {
+                icon: "📱",
+                title: "Mobile Developer",
+                description: "Create native iOS/Android apps or cross-platform solutions with React Native or Flutter",
+                color: "#FFB830",
+                phases: [
+                    {
+                        name: "📱 Choose Your Path",
+                        topics: [
+                            { name: "React Native (JavaScript/TypeScript)", priority: "Essential", category: "Framework Choice" },
+                            { name: "Flutter (Dart)", priority: "Essential", category: "Framework Choice" },
+                            { name: "iOS Native (Swift)", priority: "Essential", category: "Framework Choice" },
+                            { name: "Android Native (Kotlin)", priority: "Essential", category: "Framework Choice" }
+                        ]
+                    },
+                    {
+                        name: "🎯 Mobile Development Fundamentals",
+                        topics: [
+                            { name: "Mobile app architecture & lifecycle", priority: "Essential", category: "Fundamentals" },
+                            { name: "UI components & layouts", priority: "Essential", category: "Fundamentals" },
+                            { name: "Navigation & routing", priority: "Essential", category: "Fundamentals" },
+                            { name: "State management (Redux, Provider, Riverpod)", priority: "Essential", category: "Fundamentals" },
+                            { name: "Forms & user input handling", priority: "Essential", category: "Fundamentals" },
+                            { name: "Lists & scrollable views performance", priority: "Important", category: "Fundamentals" }
+                        ]
+                    },
+                    {
+                        name: "📡 Networking & APIs",
+                        topics: [
+                            { name: "HTTP requests & REST APIs", priority: "Essential", category: "Networking" },
+                            { name: "JSON parsing & serialization", priority: "Essential", category: "Networking" },
+                            { name: "Async/await patterns", priority: "Essential", category: "Networking" },
+                            { name: "Error handling & retry logic", priority: "Important", category: "Networking" },
+                            { name: "GraphQL integration (optional)", priority: "Good to Know", category: "Networking" }
+                        ]
+                    },
+                    {
+                        name: "💾 Local Storage & Databases",
+                        topics: [
+                            { name: "AsyncStorage / SharedPreferences", priority: "Essential", category: "Storage" },
+                            { name: "SQLite for local databases", priority: "Important", category: "Storage" },
+                            { name: "Realm or Hive (NoSQL alternatives)", priority: "Good to Know", category: "Storage" },
+                            { name: "File system access", priority: "Important", category: "Storage" },
+                            { name: "Offline-first architecture", priority: "Important", category: "Storage" }
+                        ]
+                    },
+                    {
+                        name: "🔐 Authentication & Security",
+                        topics: [
+                            { name: "Token-based authentication (JWT)", priority: "Essential", category: "Security" },
+                            { name: "Secure storage (Keychain, KeyStore)", priority: "Essential", category: "Security" },
+                            { name: "OAuth & social login integration", priority: "Important", category: "Security" },
+                            { name: "Biometric authentication", priority: "Important", category: "Security" },
+                            { name: "HTTPS & certificate pinning", priority: "Important", category: "Security" }
+                        ]
+                    },
+                    {
+                        name: "🎨 UI/UX & Styling",
+                        topics: [
+                            { name: "Responsive design for different screen sizes", priority: "Essential", category: "UI/UX" },
+                            { name: "Platform-specific design (Material/Cupertino)", priority: "Essential", category: "UI/UX" },
+                            { name: "Animations & transitions", priority: "Important", category: "UI/UX" },
+                            { name: "Dark mode support", priority: "Important", category: "UI/UX" },
+                            { name: "Accessibility (screen readers, font scaling)", priority: "Important", category: "UI/UX" },
+                            { name: "Custom fonts & icons", priority: "Important", category: "UI/UX" }
+                        ]
+                    },
+                    {
+                        name: "🔧 Native Features",
+                        topics: [
+                            { name: "Camera & photo library access", priority: "Important", category: "Native" },
+                            { name: "Location services & maps", priority: "Important", category: "Native" },
+                            { name: "Push notifications", priority: "Essential", category: "Native" },
+                            { name: "Device sensors (accelerometer, gyroscope)", priority: "Good to Know", category: "Native" },
+                            { name: "In-app purchases", priority: "Important", category: "Native" },
+                            { name: "Deep linking", priority: "Important", category: "Native" }
+                        ]
+                    },
+                    {
+                        name: "🧪 Testing & Debugging",
+                        topics: [
+                            { name: "Unit testing (Jest, XCTest, JUnit)", priority: "Important", category: "Testing" },
+                            { name: "Widget/component testing", priority: "Important", category: "Testing" },
+                            { name: "Integration testing", priority: "Good to Know", category: "Testing" },
+                            { name: "Debugging tools & profilers", priority: "Essential", category: "Testing" },
+                            { name: "Crash reporting (Sentry, Firebase Crashlytics)", priority: "Important", category: "Testing" }
+                        ]
+                    },
+                    {
+                        name: "🚀 Deployment & Distribution",
+                        topics: [
+                            { name: "App Store / Play Store submission process", priority: "Essential", category: "Deployment" },
+                            { name: "App signing & certificates", priority: "Essential", category: "Deployment" },
+                            { name: "Over-the-air (OTA) updates", priority: "Important", category: "Deployment" },
+                            { name: "Beta testing (TestFlight, Google Play Beta)", priority: "Important", category: "Deployment" },
+                            { name: "CI/CD for mobile (Fastlane, Bitrise)", priority: "Important", category: "Deployment" },
+                            { name: "App analytics & monitoring", priority: "Important", category: "Deployment" }
+                        ]
+                    }
+                ]
+            },
+            cloud: {
+                icon: "☁️",
+                title: "Cloud Engineer",
+                description: "Design, deploy, and manage scalable cloud infrastructure on AWS, Azure, or GCP",
+                color: "#00D9FF",
+                phases: [
+                    {
+                        name: "☁️ Cloud Fundamentals",
+                        topics: [
+                            { name: "Cloud computing models (IaaS, PaaS, SaaS)", priority: "Essential", category: "Fundamentals" },
+                            { name: "Public vs private vs hybrid cloud", priority: "Essential", category: "Fundamentals" },
+                            { name: "Regions, availability zones & edge locations", priority: "Essential", category: "Fundamentals" },
+                            { name: "Cloud economics & cost models", priority: "Important", category: "Fundamentals" },
+                            { name: "Shared responsibility model", priority: "Essential", category: "Fundamentals" }
+                        ]
+                    },
+                    {
+                        name: "🌐 Networking in the Cloud",
+                        topics: [
+                            { name: "Virtual Private Cloud (VPC) concepts", priority: "Essential", category: "Networking" },
+                            { name: "Subnets, route tables & internet gateways", priority: "Essential", category: "Networking" },
+                            { name: "Security groups & network ACLs", priority: "Essential", category: "Networking" },
+                            { name: "Load balancers (ALB, NLB, CLB)", priority: "Essential", category: "Networking" },
+                            { name: "DNS & Route 53 / Cloud DNS", priority: "Important", category: "Networking" },
+                            { name: "VPN & Direct Connect / ExpressRoute", priority: "Important", category: "Networking" },
+                            { name: "Content Delivery Networks (CDN)", priority: "Important", category: "Networking" }
+                        ]
+                    },
+                    {
+                        name: "💻 Compute Services",
+                        topics: [
+                            { name: "Virtual Machines (EC2, Azure VMs, Compute Engine)", priority: "Essential", category: "Compute" },
+                            { name: "Instance types, pricing & optimization", priority: "Essential", category: "Compute" },
+                            { name: "Auto Scaling groups", priority: "Essential", category: "Compute" },
+                            { name: "Serverless compute (Lambda, Azure Functions, Cloud Functions)", priority: "Essential", category: "Compute" },
+                            { name: "Container services (ECS, AKS, GKE)", priority: "Important", category: "Compute" },
+                            { name: "Elastic Beanstalk / App Service", priority: "Good to Know", category: "Compute" }
+                        ]
+                    },
+                    {
+                        name: "💾 Storage Services",
+                        topics: [
+                            { name: "Object storage (S3, Blob Storage, Cloud Storage)", priority: "Essential", category: "Storage" },
+                            { name: "Block storage (EBS, Managed Disks)", priority: "Essential", category: "Storage" },
+                            { name: "File storage (EFS, Azure Files, Filestore)", priority: "Important", category: "Storage" },
+                            { name: "Storage lifecycle policies & archiving", priority: "Important", category: "Storage" },
+                            { name: "Data transfer & migration services", priority: "Important", category: "Storage" }
+                        ]
+                    },
+                    {
+                        name: "🗄️ Databases in the Cloud",
+                        topics: [
+                            { name: "Relational databases (RDS, Azure SQL, Cloud SQL)", priority: "Essential", category: "Databases" },
+                            { name: "NoSQL databases (DynamoDB, Cosmos DB, Firestore)", priority: "Important", category: "Databases" },
+                            { name: "Database backups & disaster recovery", priority: "Essential", category: "Databases" },
+                            { name: "Read replicas & multi-region replication", priority: "Important", category: "Databases" },
+                            { name: "Data warehousing (Redshift, Synapse, BigQuery)", priority: "Good to Know", category: "Databases" }
+                        ]
+                    },
+                    {
+                        name: "🔐 Security & IAM",
+                        topics: [
+                            { name: "Identity & Access Management (IAM)", priority: "Essential", category: "Security" },
+                            { name: "Roles, policies & least privilege principle", priority: "Essential", category: "Security" },
+                            { name: "Multi-factor authentication (MFA)", priority: "Essential", category: "Security" },
+                            { name: "Encryption at rest & in transit", priority: "Essential", category: "Security" },
+                            { name: "Key management services (KMS)", priority: "Important", category: "Security" },
+                            { name: "Security monitoring & compliance", priority: "Important", category: "Security" },
+                            { name: "WAF & DDoS protection", priority: "Important", category: "Security" }
+                        ]
+                    },
+                    {
+                        name: "🏗️ Infrastructure as Code",
+                        topics: [
+                            { name: "Terraform – providers, resources, modules", priority: "Essential", category: "IaC" },
+                            { name: "CloudFormation / ARM Templates / Deployment Manager", priority: "Important", category: "IaC" },
+                            { name: "State management & backends", priority: "Essential", category: "IaC" },
+                            { name: "Configuration management (Ansible)", priority: "Important", category: "IaC" },
+                            { name: "GitOps workflows", priority: "Good to Know", category: "IaC" }
+                        ]
+                    },
+                    {
+                        name: "📊 Monitoring & Observability",
+                        topics: [
+                            { name: "CloudWatch / Azure Monitor / Cloud Monitoring", priority: "Essential", category: "Monitoring" },
+                            { name: "Metrics, logs & traces", priority: "Essential", category: "Monitoring" },
+                            { name: "Alerting & incident response", priority: "Essential", category: "Monitoring" },
+                            { name: "Log aggregation & analysis", priority: "Important", category: "Monitoring" },
+                            { name: "Cost monitoring & optimization", priority: "Important", category: "Monitoring" }
+                        ]
+                    },
+                    {
+                        name: "🚀 Advanced Topics",
+                        topics: [
+                            { name: "Serverless architectures & patterns", priority: "Important", category: "Advanced" },
+                            { name: "Event-driven architecture (SNS, SQS, EventBridge)", priority: "Important", category: "Advanced" },
+                            { name: "Microservices on cloud platforms", priority: "Important", category: "Advanced" },
+                            { name: "Multi-cloud & hybrid strategies", priority: "Good to Know", category: "Advanced" },
+                            { name: "Cloud migrations (6 Rs framework)", priority: "Good to Know", category: "Advanced" },
+                            { name: "Well-Architected Framework principles", priority: "Important", category: "Advanced" }
+                        ]
+                    },
+                    {
+                        name: "📜 Certifications",
+                        topics: [
+                            { name: "AWS Solutions Architect Associate", priority: "Important", category: "Certifications" },
+                            { name: "Azure Administrator Associate", priority: "Important", category: "Certifications" },
+                            { name: "Google Cloud Associate Engineer", priority: "Important", category: "Certifications" }
+                        ]
+                    }
+                ]
+            },
+            cybersecurity: {
+                icon: "🔒",
+                title: "Cybersecurity Analyst",
+                description: "Protect systems, networks, and data from cyber threats and vulnerabilities",
+                color: "#FF6B9D",
+                phases: [
+                    {
+                        name: "🔐 Security Fundamentals",
+                        topics: [
+                            { name: "CIA triad (Confidentiality, Integrity, Availability)", priority: "Essential", category: "Fundamentals" },
+                            { name: "Authentication vs Authorization", priority: "Essential", category: "Fundamentals" },
+                            { name: "Common attack vectors & threat landscape", priority: "Essential", category: "Fundamentals" },
+                            { name: "Security policies & frameworks", priority: "Important", category: "Fundamentals" },
+                            { name: "Risk assessment & management", priority: "Important", category: "Fundamentals" }
+                        ]
+                    },
+                    {
+                        name: "🌐 Network Security",
+                        topics: [
+                            { name: "Network protocols & OSI model", priority: "Essential", category: "Network" },
+                            { name: "Firewalls & ACLs configuration", priority: "Essential", category: "Network" },
+                            { name: "IDS/IPS systems", priority: "Essential", category: "Network" },
+                            { name: "VPN technologies & secure tunneling", priority: "Important", category: "Network" },
+                            { name: "Network segmentation & DMZ", priority: "Important", category: "Network" },
+                            { name: "Packet analysis (Wireshark)", priority: "Important", category: "Network" }
+                        ]
+                    },
+                    {
+                        name: "💻 System Security",
+                        topics: [
+                            { name: "Operating system hardening (Linux, Windows)", priority: "Essential", category: "Systems" },
+                            { name: "Patch management & vulnerability scanning", priority: "Essential", category: "Systems" },
+                            { name: "Endpoint protection & antivirus", priority: "Essential", category: "Systems" },
+                            { name: "User access controls & privilege management", priority: "Essential", category: "Systems" },
+                            { name: "Security logging & auditing", priority: "Important", category: "Systems" }
+                        ]
+                    },
+                    {
+                        name: "🔍 Threat Detection & Response",
+                        topics: [
+                            { name: "SIEM platforms (Splunk, ELK, QRadar)", priority: "Essential", category: "Detection" },
+                            { name: "Log analysis & correlation", priority: "Essential", category: "Detection" },
+                            { name: "Incident response procedures", priority: "Essential", category: "Detection" },
+                            { name: "Digital forensics basics", priority: "Important", category: "Detection" },
+                            { name: "Malware analysis fundamentals", priority: "Important", category: "Detection" },
+                            { name: "Threat intelligence & IOCs", priority: "Important", category: "Detection" }
+                        ]
+                    },
+                    {
+                        name: "🔑 Cryptography",
+                        topics: [
+                            { name: "Symmetric vs asymmetric encryption", priority: "Essential", category: "Cryptography" },
+                            { name: "Hashing algorithms & integrity checks", priority: "Essential", category: "Cryptography" },
+                            { name: "PKI & digital certificates", priority: "Essential", category: "Cryptography" },
+                            { name: "TLS/SSL protocols", priority: "Essential", category: "Cryptography" },
+                            { name: "Key management best practices", priority: "Important", category: "Cryptography" }
+                        ]
+                    },
+                    {
+                        name: "🌐 Web Application Security",
+                        topics: [
+                            { name: "OWASP Top 10 vulnerabilities", priority: "Essential", category: "Web Security" },
+                            { name: "SQL injection prevention", priority: "Essential", category: "Web Security" },
+                            { name: "XSS (Cross-Site Scripting) mitigation", priority: "Essential", category: "Web Security" },
+                            { name: "CSRF protection", priority: "Essential", category: "Web Security" },
+                            { name: "Secure authentication & session management", priority: "Essential", category: "Web Security" },
+                            { name: "Web application firewalls (WAF)", priority: "Important", category: "Web Security" }
+                        ]
+                    },
+                    {
+                        name: "🛠️ Security Tools",
+                        topics: [
+                            { name: "Nmap – network scanning", priority: "Essential", category: "Tools" },
+                            { name: "Metasploit – penetration testing", priority: "Important", category: "Tools" },
+                            { name: "Burp Suite – web app testing", priority: "Important", category: "Tools" },
+                            { name: "Nessus / OpenVAS – vulnerability scanning", priority: "Essential", category: "Tools" },
+                            { name: "Kali Linux toolset", priority: "Important", category: "Tools" }
+                        ]
+                    },
+                    {
+                        name: "☁️ Cloud Security",
+                        topics: [
+                            { name: "Cloud security best practices", priority: "Essential", category: "Cloud Security" },
+                            { name: "IAM & access management", priority: "Essential", category: "Cloud Security" },
+                            { name: "Container security", priority: "Important", category: "Cloud Security" },
+                            { name: "Cloud compliance & governance", priority: "Important", category: "Cloud Security" }
+                        ]
+                    },
+                    {
+                        name: "📜 Compliance & Governance",
+                        topics: [
+                            { name: "GDPR, HIPAA, PCI-DSS basics", priority: "Important", category: "Compliance" },
+                            { name: "Security frameworks (NIST, ISO 27001)", priority: "Important", category: "Compliance" },
+                            { name: "Security awareness training", priority: "Important", category: "Compliance" },
+                            { name: "Documentation & reporting", priority: "Essential", category: "Compliance" }
+                        ]
+                    }
+                ]
+            },
+            ml_engineer: {
+                icon: "🤖",
+                title: "ML Engineer",
+                description: "Build, deploy, and scale machine learning models in production environments",
+                color: "#B66DFF",
+                phases: [
+                    {
+                        name: "🐍 Python & Math Foundations",
+                        topics: [
+                            { name: "Python advanced – OOP, decorators, generators", priority: "Essential", category: "Python" },
+                            { name: "NumPy & vectorized operations", priority: "Essential", category: "Python" },
+                            { name: "Linear algebra for ML", priority: "Essential", category: "Math" },
+                            { name: "Calculus – derivatives & gradients", priority: "Essential", category: "Math" },
+                            { name: "Statistics & probability", priority: "Essential", category: "Math" },
+                            { name: "Optimization algorithms", priority: "Important", category: "Math" }
+                        ]
+                    },
+                    {
+                        name: "🤖 Machine Learning Fundamentals",
+                        topics: [
+                            { name: "Supervised learning algorithms", priority: "Essential", category: "ML" },
+                            { name: "Unsupervised learning (clustering, PCA)", priority: "Essential", category: "ML" },
+                            { name: "Feature engineering & selection", priority: "Essential", category: "ML" },
+                            { name: "Model evaluation & validation", priority: "Essential", category: "ML" },
+                            { name: "Bias-variance tradeoff", priority: "Important", category: "ML" },
+                            { name: "Ensemble methods (bagging, boosting)", priority: "Essential", category: "ML" }
+                        ]
+                    },
+                    {
+                        name: "🧠 Deep Learning",
+                        topics: [
+                            { name: "Neural network architectures", priority: "Essential", category: "Deep Learning" },
+                            { name: "Backpropagation & gradient descent", priority: "Essential", category: "Deep Learning" },
+                            { name: "CNNs for computer vision", priority: "Essential", category: "Deep Learning" },
+                            { name: "RNNs & LSTMs for sequences", priority: "Essential", category: "Deep Learning" },
+                            { name: "Transformers & attention mechanisms", priority: "Important", category: "Deep Learning" },
+                            { name: "Transfer learning & fine-tuning", priority: "Essential", category: "Deep Learning" },
+                            { name: "PyTorch or TensorFlow deep dive", priority: "Essential", category: "Deep Learning" }
+                        ]
+                    },
+                    {
+                        name: "🛠️ ML Frameworks & Tools",
+                        topics: [
+                            { name: "Scikit-learn for classical ML", priority: "Essential", category: "Frameworks" },
+                            { name: "PyTorch or TensorFlow ecosystem", priority: "Essential", category: "Frameworks" },
+                            { name: "Hugging Face Transformers", priority: "Important", category: "Frameworks" },
+                            { name: "XGBoost & LightGBM", priority: "Important", category: "Frameworks" },
+                            { name: "ONNX for model interoperability", priority: "Good to Know", category: "Frameworks" }
+                        ]
+                    },
+                    {
+                        name: "📊 Data Engineering for ML",
+                        topics: [
+                            { name: "Data pipelines & ETL processes", priority: "Essential", category: "Data Engineering" },
+                            { name: "Working with large datasets (Spark, Dask)", priority: "Important", category: "Data Engineering" },
+                            { name: "Data versioning (DVC)", priority: "Important", category: "Data Engineering" },
+                            { name: "Feature stores", priority: "Important", category: "Data Engineering" },
+                            { name: "SQL & database optimization", priority: "Essential", category: "Data Engineering" }
+                        ]
+                    },
+                    {
+                        name: "🚀 MLOps & Model Deployment",
+                        topics: [
+                            { name: "Model versioning & experiment tracking (MLflow, Weights & Biases)", priority: "Essential", category: "MLOps" },
+                            { name: "Model serialization & serving", priority: "Essential", category: "MLOps" },
+                            { name: "REST APIs for ML models (FastAPI)", priority: "Essential", category: "MLOps" },
+                            { name: "Docker for ML applications", priority: "Essential", category: "MLOps" },
+                            { name: "Kubernetes for ML workloads", priority: "Important", category: "MLOps" },
+                            { name: "CI/CD for ML pipelines", priority: "Essential", category: "MLOps" },
+                            { name: "Model monitoring & drift detection", priority: "Essential", category: "MLOps" }
+                        ]
+                    },
+                    {
+                        name: "☁️ Cloud ML Services",
+                        topics: [
+                            { name: "AWS SageMaker", priority: "Important", category: "Cloud ML" },
+                            { name: "Google Cloud AI Platform / Vertex AI", priority: "Important", category: "Cloud ML" },
+                            { name: "Azure Machine Learning", priority: "Important", category: "Cloud ML" },
+                            { name: "Managed Jupyter notebooks", priority: "Important", category: "Cloud ML" },
+                            { name: "Serverless ML inference", priority: "Good to Know", category: "Cloud ML" }
+                        ]
+                    },
+                    {
+                        name: "⚡ Model Optimization",
+                        topics: [
+                            { name: "Hyperparameter tuning at scale", priority: "Important", category: "Optimization" },
+                            { name: "Model compression & quantization", priority: "Important", category: "Optimization" },
+                            { name: "Distributed training", priority: "Important", category: "Optimization" },
+                            { name: "GPU optimization & mixed precision", priority: "Important", category: "Optimization" },
+                            { name: "Edge deployment optimization", priority: "Good to Know", category: "Optimization" }
+                        ]
+                    },
+                    {
+                        name: "🧪 Testing & Validation",
+                        topics: [
+                            { name: "Unit testing for ML code", priority: "Essential", category: "Testing" },
+                            { name: "A/B testing for models", priority: "Important", category: "Testing" },
+                            { name: "Model explainability (SHAP, LIME)", priority: "Important", category: "Testing" },
+                            { name: "Fairness & bias detection", priority: "Important", category: "Testing" }
+                        ]
+                    }
+                ]
+            },
+            blockchain: {
+                icon: "⛓️",
+                title: "Blockchain Developer",
+                description: "Build decentralized applications and smart contracts on Ethereum, Solidity, and Web3",
+                color: "#00F5A0",
+                phases: [
+                    {
+                        name: "🔗 Blockchain Fundamentals",
+                        topics: [
+                            { name: "Blockchain architecture & consensus mechanisms", priority: "Essential", category: "Fundamentals" },
+                            { name: "Cryptographic hashing & digital signatures", priority: "Essential", category: "Fundamentals" },
+                            { name: "Public vs private blockchains", priority: "Essential", category: "Fundamentals" },
+                            { name: "Distributed ledger technology (DLT)", priority: "Essential", category: "Fundamentals" },
+                            { name: "Bitcoin & cryptocurrency basics", priority: "Important", category: "Fundamentals" }
+                        ]
+                    },
+                    {
+                        name: "⚡ Ethereum & Smart Contracts",
+                        topics: [
+                            { name: "Ethereum architecture & EVM", priority: "Essential", category: "Ethereum" },
+                            { name: "Accounts, transactions & gas", priority: "Essential", category: "Ethereum" },
+                            { name: "Solidity programming language", priority: "Essential", category: "Ethereum" },
+                            { name: "Smart contract development basics", priority: "Essential", category: "Ethereum" },
+                            { name: "ERC-20, ERC-721, ERC-1155 token standards", priority: "Essential", category: "Ethereum" },
+                            { name: "Truffle or Hardhat framework", priority: "Essential", category: "Ethereum" }
+                        ]
+                    },
+                    {
+                        name: "💻 Smart Contract Security",
+                        topics: [
+                            { name: "Common vulnerabilities (reentrancy, overflow)", priority: "Essential", category: "Security" },
+                            { name: "Security best practices", priority: "Essential", category: "Security" },
+                            { name: "Smart contract auditing", priority: "Important", category: "Security" },
+                            { name: "OpenZeppelin contracts library", priority: "Essential", category: "Security" },
+                            { name: "Testing with Mocha/Chai", priority: "Essential", category: "Security" }
+                        ]
+                    },
+                    {
+                        name: "🌐 Web3 & DApp Development",
+                        topics: [
+                            { name: "Web3.js or Ethers.js library", priority: "Essential", category: "Web3" },
+                            { name: "MetaMask integration", priority: "Essential", category: "Web3" },
+                            { name: "React + Web3 frontend development", priority: "Essential", category: "Web3" },
+                            { name: "IPFS for decentralized storage", priority: "Important", category: "Web3" },
+                            { name: "The Graph for blockchain indexing", priority: "Important", category: "Web3" }
+                        ]
+                    },
+                    {
+                        name: "🏦 DeFi Concepts",
+                        topics: [
+                            { name: "Decentralized exchanges (DEX)", priority: "Important", category: "DeFi" },
+                            { name: "Liquidity pools & AMMs", priority: "Important", category: "DeFi" },
+                            { name: "Yield farming & staking", priority: "Important", category: "DeFi" },
+                            { name: "Flash loans & arbitrage", priority: "Good to Know", category: "DeFi" },
+                            { name: "DAOs (Decentralized Autonomous Organizations)", priority: "Important", category: "DeFi" }
+                        ]
+                    },
+                    {
+                        name: "🎨 NFTs & Digital Assets",
+                        topics: [
+                            { name: "NFT standards & minting", priority: "Important", category: "NFTs" },
+                            { name: "NFT marketplaces & royalties", priority: "Important", category: "NFTs" },
+                            { name: "Metadata & token URIs", priority: "Important", category: "NFTs" }
+                        ]
+                    },
+                    {
+                        name: "⚙️ Layer 2 & Scaling Solutions",
+                        topics: [
+                            { name: "Layer 2 concepts (Optimistic & ZK Rollups)", priority: "Important", category: "Scaling" },
+                            { name: "Polygon / Arbitrum / Optimism", priority: "Important", category: "Scaling" },
+                            { name: "Cross-chain bridges", priority: "Good to Know", category: "Scaling" }
+                        ]
+                    },
+                    {
+                        name: "🛠️ Development Tools",
+                        topics: [
+                            { name: "Remix IDE for smart contracts", priority: "Essential", category: "Tools" },
+                            { name: "Local blockchain (Ganache, Hardhat Network)", priority: "Essential", category: "Tools" },
+                            { name: "Deployment to testnets & mainnet", priority: "Essential", category: "Tools" },
+                            { name: "Etherscan & blockchain explorers", priority: "Important", category: "Tools" }
+                        ]
+                    },
+                    {
+                        name: "🔮 Advanced Topics",
+                        topics: [
+                            { name: "Alternative blockchains (Solana, Polkadot, Cardano)", priority: "Good to Know", category: "Advanced" },
+                            { name: "Zero-knowledge proofs", priority: "Good to Know", category: "Advanced" },
+                            { name: "Chainlink oracles", priority: "Important", category: "Advanced" }
+                        ]
+                    }
+                ]
+            },
+            game_dev: {
+                icon: "🎮",
+                title: "Game Developer",
+                description: "Create immersive games with Unity, Unreal Engine, and game design principles",
+                color: "#FFB830",
+                phases: [
+                    {
+                        name: "🎮 Game Development Fundamentals",
+                        topics: [
+                            { name: "Game engines overview (Unity vs Unreal)", priority: "Essential", category: "Fundamentals" },
+                            { name: "Game design principles & mechanics", priority: "Essential", category: "Fundamentals" },
+                            { name: "Game loops & frame rates", priority: "Essential", category: "Fundamentals" },
+                            { name: "2D vs 3D game development", priority: "Essential", category: "Fundamentals" }
+                        ]
+                    },
+                    {
+                        name: "💻 Programming for Games",
+                        topics: [
+                            { name: "C# for Unity", priority: "Essential", category: "Programming" },
+                            { name: "C++ for Unreal Engine", priority: "Essential", category: "Programming" },
+                            { name: "Object-oriented programming in games", priority: "Essential", category: "Programming" },
+                            { name: "Design patterns (Singleton, Observer, State)", priority: "Important", category: "Programming" },
+                            { name: "Game scripting & blueprints (Unreal)", priority: "Important", category: "Programming" }
+                        ]
+                    },
+                    {
+                        name: "🎨 Graphics & Rendering",
+                        topics: [
+                            { name: "3D modeling basics (Blender)", priority: "Important", category: "Graphics" },
+                            { name: "Textures, materials & shaders", priority: "Essential", category: "Graphics" },
+                            { name: "Lighting & shadows", priority: "Essential", category: "Graphics" },
+                            { name: "Particle systems & visual effects", priority: "Important", category: "Graphics" },
+                            { name: "Post-processing effects", priority: "Important", category: "Graphics" },
+                            { name: "Optimization for performance", priority: "Important", category: "Graphics" }
+                        ]
+                    },
+                    {
+                        name: "🎬 Animation",
+                        topics: [
+                            { name: "Character rigging & skeletal animation", priority: "Important", category: "Animation" },
+                            { name: "Animation state machines", priority: "Essential", category: "Animation" },
+                            { name: "Blend trees & animation layering", priority: "Important", category: "Animation" },
+                            { name: "Inverse kinematics (IK)", priority: "Important", category: "Animation" }
+                        ]
+                    },
+                    {
+                        name: "⚙️ Physics & Collision",
+                        topics: [
+                            { name: "Rigidbody physics & forces", priority: "Essential", category: "Physics" },
+                            { name: "Collision detection & response", priority: "Essential", category: "Physics" },
+                            { name: "Raycasting & triggers", priority: "Essential", category: "Physics" },
+                            { name: "Physics materials & joints", priority: "Important", category: "Physics" }
+                        ]
+                    },
+                    {
+                        name: "🤖 AI & NPCs",
+                        topics: [
+                            { name: "Pathfinding (A*, NavMesh)", priority: "Essential", category: "AI" },
+                            { name: "Behavior trees & state machines", priority: "Important", category: "AI" },
+                            { name: "Enemy AI patterns", priority: "Important", category: "AI" },
+                            { name: "Decision making algorithms", priority: "Good to Know", category: "AI" }
+                        ]
+                    },
+                    {
+                        name: "🎵 Audio",
+                        topics: [
+                            { name: "Sound effects integration", priority: "Essential", category: "Audio" },
+                            { name: "Music systems & adaptive audio", priority: "Important", category: "Audio" },
+                            { name: "3D spatial audio", priority: "Important", category: "Audio" },
+                            { name: "Audio mixing & mastering basics", priority: "Good to Know", category: "Audio" }
+                        ]
+                    },
+                    {
+                        name: "🎮 UI/UX for Games",
+                        topics: [
+                            { name: "HUD & menu systems", priority: "Essential", category: "UI/UX" },
+                            { name: "Input handling (keyboard, mouse, gamepad)", priority: "Essential", category: "UI/UX" },
+                            { name: "Player feedback & game feel", priority: "Essential", category: "UI/UX" },
+                            { name: "Accessibility in games", priority: "Important", category: "UI/UX" }
+                        ]
+                    },
+                    {
+                        name: "🌐 Multiplayer & Networking",
+                        topics: [
+                            { name: "Client-server architecture", priority: "Important", category: "Multiplayer" },
+                            { name: "Networking in Unity (Netcode, Photon)", priority: "Important", category: "Multiplayer" },
+                            { name: "Replication & synchronization", priority: "Important", category: "Multiplayer" },
+                            { name: "Lag compensation techniques", priority: "Good to Know", category: "Multiplayer" }
+                        ]
+                    },
+                    {
+                        name: "🚀 Optimization & Publishing",
+                        topics: [
+                            { name: "Performance profiling", priority: "Essential", category: "Optimization" },
+                            { name: "Memory management", priority: "Important", category: "Optimization" },
+                            { name: "Build settings & platform-specific optimization", priority: "Essential", category: "Optimization" },
+                            { name: "Publishing to Steam, Epic, consoles", priority: "Important", category: "Publishing" },
+                            { name: "Monetization strategies", priority: "Good to Know", category: "Publishing" }
+                        ]
+                    }
+                ]
+            }
+        };
+
+        // State management
+        let currentCareer = null;
+        let completedTopics = {};
+
+        // Load saved progress from localStorage
+        function loadProgress() {
+            const saved = localStorage.getItem('careerProgress');
+            if (saved) {
+                completedTopics = JSON.parse(saved);
+            }
+        }
+
+        // Save progress to localStorage
+        function saveProgress() {
+            localStorage.setItem('careerProgress', JSON.stringify(completedTopics));
+        }
+
+        // Render career cards
+        function renderCareers() {
+            const grid = document.getElementById('careersGrid');
+            grid.innerHTML = '';
+
+            Object.entries(careers).forEach(([key, career]) => {
+                const totalTopics = career.phases.reduce((sum, phase) => sum + phase.topics.length, 0);
+                
+                const card = document.createElement('div');
+                card.className = 'career-card';
+                card.innerHTML = `
+                    <span class="career-icon">${career.icon}</span>
+                    <h3>${career.title}</h3>
+                    <p>${career.description}</p>
+                    <span class="topic-count">${totalTopics} topics</span>
+                `;
+                card.onclick = () => openRoadmap(key);
+                grid.appendChild(card);
+            });
+        }
+
+        // Open roadmap modal
+        function openRoadmap(careerKey) {
+            currentCareer = careerKey;
+            const career = careers[careerKey];
+            
+            document.getElementById('modalTitle').innerHTML = `
+                ${career.icon} ${career.title}
+            `;
+
+            renderPhases(career);
+            updateProgress();
+            
+            document.getElementById('roadmapModal').classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+
+        // Close modal
+        function closeModal() {
+            document.getElementById('roadmapModal').classList.remove('active');
+            document.body.style.overflow = 'auto';
+            currentCareer = null;
+        }
+
+        // Render phases and topics
+        function renderPhases(career) {
+            const container = document.getElementById('phasesContainer');
+            container.innerHTML = '';
+
+            career.phases.forEach((phase, phaseIdx) => {
+                const phaseSection = document.createElement('div');
+                phaseSection.className = 'phase-section';
+                
+                const phaseHeader = document.createElement('div');
+                phaseHeader.className = 'phase-header';
+                phaseHeader.innerHTML = `
+                    <div class="phase-title">${phase.name}</div>
+                    <div class="phase-badge">${phase.topics.length} topics</div>
+                `;
+                
+                const topicsList = document.createElement('div');
+                topicsList.className = 'topics-list';
+                
+                phase.topics.forEach((topic, topicIdx) => {
+                    const topicId = `${currentCareer}-${phaseIdx}-${topicIdx}`;
+                    const isCompleted = completedTopics[topicId] || false;
+                    
+                    const topicItem = document.createElement('div');
+                    topicItem.className = `topic-item ${isCompleted ? 'completed' : ''}`;
+                    topicItem.innerHTML = `
+                        <div class="checkbox">${isCompleted ? '✓' : ''}</div>
+                        <div class="topic-content">
+                            <div class="topic-name">${topic.name}</div>
+                            <div class="topic-meta">
+                                <span class="priority-badge priority-${topic.priority.toLowerCase().replace(' ', '')}">${topic.priority}</span>
+                                <span class="category-tag">${topic.category}</span>
+                            </div>
+                        </div>
+                    `;
+                    topicItem.onclick = () => toggleTopic(topicId);
+                    topicsList.appendChild(topicItem);
+                });
+                
+                phaseSection.appendChild(phaseHeader);
+                phaseSection.appendChild(topicsList);
+                container.appendChild(phaseSection);
+            });
+        }
+
+        // Toggle topic completion
+        function toggleTopic(topicId) {
+            completedTopics[topicId] = !completedTopics[topicId];
+            saveProgress();
+            
+            const career = careers[currentCareer];
+            renderPhases(career);
+            updateProgress();
+        }
+
+        // Update progress bar and stats
+        function updateProgress() {
+            if (!currentCareer) return;
+            
+            const career = careers[currentCareer];
+            const totalTopics = career.phases.reduce((sum, phase) => sum + phase.topics.length, 0);
+            
+            let completed = 0;
+            career.phases.forEach((phase, phaseIdx) => {
+                phase.topics.forEach((topic, topicIdx) => {
+                    const topicId = `${currentCareer}-${phaseIdx}-${topicIdx}`;
+                    if (completedTopics[topicId]) completed++;
+                });
+            });
+            
+            const percentage = Math.round((completed / totalTopics) * 100);
+            
+            document.getElementById('completedCount').textContent = completed;
+            document.getElementById('totalCount').textContent = totalTopics;
+            document.getElementById('progressPercent').textContent = percentage + '%';
+            document.getElementById('progressBar').style.width = percentage + '%';
+        }
+
+        // Initialize
+        loadProgress();
+        renderCareers();
+
+        // Close modal on escape key
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') closeModal();
+        });
+
+        // Close modal on background click
+        document.getElementById('roadmapModal').addEventListener('click', (e) => {
+            if (e.target.id === 'roadmapModal') closeModal();
+        });
+    </script>
+</body>
+</html>
