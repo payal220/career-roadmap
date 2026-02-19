@@ -331,11 +331,7 @@ These are rough estimates for going from beginner to job-ready:
 - [HackerRank](https://hackerrank.com) - Programming challenges
 - [Kaggle](https://kaggle.com) - Data science competitions
 
-### Communities
-- Reddit: r/learnprogramming, r/webdev, r/devops, etc.
-- [Dev.to](https://dev.to) - Developer articles and community
-- [Stack Overflow](https://stackoverflow.com) - Q&A for specific issues
-- Discord: Search for career-specific servers
+
 
 ---
 
